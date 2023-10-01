@@ -28,25 +28,26 @@ public class Turret : MonoBehaviour
 	
 	private void Start()
 	{
-		UnlockUpgrades();
+		// UnlockUpgrades();
 		Touch.onFingerDown += OnFingerDownHandler;
 		Touch.onFingerUp += OnFingerUpHandler;
 	}
 	
 	private void OnFingerDownHandler(Finger finger)
 	{
-		if (GameController._isPlaying)
-		{
+		// if (GameController._isPlaying)
+		// {
 			EnableLasers(true);
 			AudioEvent.RaiseEvent(AudioTypes.Laser);
 			multiplier *= -1;
-		}
-		
+		//}
+		Debug.Log("Turret down");
 	}
 	
 	private void OnFingerUpHandler(Finger finger)
 	{
-		EnableLasers(false);
+		//EnableLasers(false);
+		Debug.Log("Turret up");
 	}
 	
 	private void EnableLasers(bool value)

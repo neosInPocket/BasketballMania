@@ -17,7 +17,6 @@ public class GameController : MonoBehaviour
 	[SerializeField] private WinScreenWithCoins _winScreen; 
 	[SerializeField] private ProgressBar _levelProgress;
 	[SerializeField] List<GameObject> _spawnAreas;
-	[SerializeField] List<Orb> _orbs;
 	[SerializeField] private GameObject _orbsContainer; 
 	[SerializeField] private int _spawnDelay = 1; 
 	[SerializeField] private GameObject deathZone;
@@ -54,7 +53,6 @@ public class GameController : MonoBehaviour
 		GameEventHandler.OnEvent += OnEventHandler;
 		RefreshTurretUpgrades();
 		lives = maxLives;
-		DeleteOrbs();
 		_levelMaxPoints = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 5);
 		_levelCoins = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 10) + 50;
 		_gameScreen.gameObject.SetActive(true);
@@ -107,7 +105,6 @@ public class GameController : MonoBehaviour
 			SaveLoad.Save();
 			_winScreen.gameObject.SetActive(true);
 			_winScreen.Show(_levelCoins);
-			DeleteOrbs();
 			return;
 		}
 		
@@ -117,7 +114,6 @@ public class GameController : MonoBehaviour
 			_points = 0;
 			_defeatScreen.gameObject.SetActive(true);
 			_defeatScreen.Show();
-			DeleteOrbs();
 			return;
 		}
 	}
@@ -150,7 +146,6 @@ public class GameController : MonoBehaviour
 	private IEnumerator Spawn()
 	{
 		_isSpawning = true;
-		Instantiate(GetRandomOrb(), GetRandomSpawnPoint(), Quaternion.identity, _orbsContainer.transform);
 		yield return new WaitForSeconds(_spawnDelay);
 		_isSpawning = false;
 	}
@@ -174,20 +169,4 @@ public class GameController : MonoBehaviour
 		
 		return new Vector2(randomX, randomY);
 	}
-	
-	private Orb GetRandomOrb()
-	{
-		var rnd = new Random();
-		Orb orb = _orbs[rnd.Next(0, _orbs.Count)];
-		return orb;
-	}
-	
-	private void DeleteOrbs()
-	{
-		foreach (Transform child in _orbsContainer.transform)
-		{
-			if (child.TryGetComponent<Orb>(out Orb orb)) orb.GetComponent<Orb>().PlayDeath();
-		}
-	}
-
 }
