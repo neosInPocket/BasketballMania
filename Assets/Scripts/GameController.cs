@@ -5,10 +5,11 @@ using Random = System.Random;
 
 public class GameController : MonoBehaviour
 {
+	[SerializeField] private Canvas _backgroundCanvas;
+	[SerializeField] private Camera _mainCamera;
+	[SerializeField] private Camera _backGroundCamera;
 	[SerializeField] private TutorialScreen _tutor;
 	[SerializeField] private UIHealth _uiHealth; 
-	[SerializeField] private Turret _turret; 
-	[SerializeField] private GameObject turretGO;
 	[SerializeField] private FadeScreen _fadeScreen;
 	[SerializeField] private MainMenuController _mainMenuController;
 	[SerializeField] private GameScreen _gameScreen;
@@ -16,10 +17,6 @@ public class GameController : MonoBehaviour
 	[SerializeField] private WinScreen _defeatScreen; 
 	[SerializeField] private WinScreenWithCoins _winScreen; 
 	[SerializeField] private ProgressBar _levelProgress;
-	[SerializeField] List<GameObject> _spawnAreas;
-	[SerializeField] private GameObject _orbsContainer; 
-	[SerializeField] private int _spawnDelay = 1; 
-	[SerializeField] private GameObject deathZone;
 	public static Sprite[] PlanetsSprites;
 	private float _playDelay;
 	public static int _levelCoins;
@@ -27,9 +24,8 @@ public class GameController : MonoBehaviour
 	public static int _points;
 	private bool _isSpawning;
 	public static bool _isPlaying = false;
-	public static int lives;
-	public const int maxLives = 3;
 	private bool isTutor = false;
+	public static int lives;
 	
 	
 	private void Awake()
@@ -47,12 +43,9 @@ public class GameController : MonoBehaviour
 	public void Initialize()
 	{
 		_isPlaying = false;
-		turretGO.gameObject.SetActive(true);
-		deathZone.gameObject.SetActive(true);
+		_backgroundCanvas.worldCamera = _backGroundCamera;
 		
 		GameEventHandler.OnEvent += OnEventHandler;
-		RefreshTurretUpgrades();
-		lives = maxLives;
 		_levelMaxPoints = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 5);
 		_levelCoins = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 10) + 50;
 		_gameScreen.gameObject.SetActive(true);
@@ -60,7 +53,7 @@ public class GameController : MonoBehaviour
 		_levelProgress.Refresh(0);
 		_points = 0;
 		_playDelay = (int)_countDownScreen.GetComponent<Animator>().runtimeAnimatorController.animationClips[0].length;
-		_uiHealth.RefreshLifes(lives);
+		_uiHealth.RefreshLifes(MainMenuController.CurrentLivesUpgrade);
 		isTutor = false;
 		
 		if (MainMenuController.IsFirstTime == "yes")
@@ -78,11 +71,6 @@ public class GameController : MonoBehaviour
 		
 		
 		StartCoroutine(PlayDelay());
-	}
-	
-	private void RefreshTurretUpgrades()
-	{
-		_turret.UnlockUpgrades();
 	}
 	
 	private void OnEventHandler(bool value)
@@ -143,30 +131,9 @@ public class GameController : MonoBehaviour
 		_isPlaying = true;
 	}
 	
-	private IEnumerator Spawn()
-	{
-		_isSpawning = true;
-		yield return new WaitForSeconds(_spawnDelay);
-		_isSpawning = false;
-	}
-	
 	public void UpdateUI()
 	{
 		var progress = _points / _levelMaxPoints;
 		_levelProgress.Refresh(progress);
-	}
-	
-	private Vector2 GetRandomSpawnPoint()
-	{
-		var rnd = new Random();
-		GameObject spawnArea = _spawnAreas[rnd.Next(0, _spawnAreas.Count)];
-		
-		Vector3 areaPosition = spawnArea.transform.position;
-		Vector3 areaSize = spawnArea.GetComponent<Renderer>().bounds.size;
-		
-		float randomX = UnityEngine.Random.Range(areaPosition.x - areaSize.x/2, areaPosition.x + areaSize.x/2);
-		float randomY = UnityEngine.Random.Range(areaPosition.y - areaSize.y/2, areaPosition.y + areaSize.y/2);
-		
-		return new Vector2(randomX, randomY);
 	}
 }

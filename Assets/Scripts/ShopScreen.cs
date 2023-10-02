@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class ShopScreen : MonoBehaviour
 {
-	[SerializeField] private Button _laserButton;
-	[SerializeField] private Button _rotationButton;
+	[SerializeField] private Button _speedButton;
+	[SerializeField] private Button _livesButton;
 	[SerializeField] private TMP_Text _coinsAmountText;
-	[SerializeField] private TMP_Text _laserUpgradeAmount;
-	[SerializeField] private TMP_Text _rotationUpgradeAmount;
+	[SerializeField] private TMP_Text _speedUpgradeAmount;
+	[SerializeField] private TMP_Text _maxLivesUpgradeAmount;
 	[SerializeField] private TMP_Text _coinsText;
 	[SerializeField] private ErrorText _errorText;
 	
@@ -19,7 +19,7 @@ public class ShopScreen : MonoBehaviour
 		Refresh();
 	}
 	
-	public void BuyRotationUpgrade()
+	public void BuyLivesUpgrade()
 	{
 		var leftCoins = MainMenuController.Coins - 100;
 		if (leftCoins < 0)
@@ -27,13 +27,13 @@ public class ShopScreen : MonoBehaviour
 			_errorText.Error();
 			return;
 		}
-		MainMenuController.CurrentRotationSpeed++;
+		MainMenuController.CurrentLivesUpgrade++;
 		MainMenuController.Coins -= 100;
 		SaveLoad.Save();
 		Refresh();
 	}
 	
-	public void BuyLaserUpgrade()
+	public void BuySpeedUpgrade()
 	{
 		var leftCoins = MainMenuController.Coins - 50;
 		if (leftCoins < 0)
@@ -41,7 +41,7 @@ public class ShopScreen : MonoBehaviour
 			_errorText.Error();
 			return;
 		}
-		MainMenuController.CurrentLaserUpgrade++;
+		MainMenuController.CurrentSpeedUpgrade++;
 		MainMenuController.Coins -= 50;
 		SaveLoad.Save();
 		Refresh();
@@ -51,17 +51,17 @@ public class ShopScreen : MonoBehaviour
 	{
 		_coinsText.text = MainMenuController.Coins.ToString();
 		_coinsAmountText.text = "Your coins:";
-		_laserUpgradeAmount.text = "Laser upgrade amount: " + MainMenuController.CurrentLaserUpgrade.ToString() + "/3";
-		_rotationUpgradeAmount.text = "Rot. upgrade amount: " + MainMenuController.CurrentRotationSpeed.ToString() + "/3";
+		_speedUpgradeAmount.text = "Speed upgrade: " + MainMenuController.CurrentSpeedUpgrade.ToString() + "/3";
+		_maxLivesUpgradeAmount.text = "Lives amount upgrade: " + MainMenuController.CurrentLivesUpgrade.ToString() + "/3";
 		
-		if (MainMenuController.CurrentLaserUpgrade == 3)
+		if (MainMenuController.CurrentSpeedUpgrade == 3)
 		{
-			_laserButton.interactable = false;
+			_speedButton.interactable = false;
 		}
 		
-		if (MainMenuController.CurrentRotationSpeed == 3)
+		if (MainMenuController.CurrentLivesUpgrade == 3)
 		{
-			_rotationButton.interactable = false;
+			_livesButton.interactable = false;
 		}
 	}
 }
