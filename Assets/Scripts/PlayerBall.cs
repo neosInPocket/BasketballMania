@@ -1,3 +1,5 @@
+using System.Collections;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
@@ -9,6 +11,11 @@ public class PlayerBall : MonoBehaviour
 	[SerializeField] private Rigidbody2D _rb; 
 	[SerializeField] private float _maxSpeed;
 	[SerializeField] private float _maxDistance; 
+	[SerializeField] private float _acceleration;
+	[SerializeField] private GameObject _deathEffect;
+	[SerializeField] private SpriteRenderer _spriteRenderer;
+	[SerializeField] private TrailRenderer _trailRenderer;
+	public bool _isDestroyed;
 	private bool _isMoving;
 	private Vector2 _destination;
 	private float _currentSpeed;
@@ -43,13 +50,22 @@ public class PlayerBall : MonoBehaviour
 			return;
 		}
 		
+		if (_currentSpeed > _maxSpeed)
+		{
+			_currentSpeed = _maxSpeed;
+			_rb.velocity = _currentSpeed * transform.right;
+			return;
+		}
+		
+		_currentSpeed += _acceleration;
 		_rb.velocity = _currentSpeed * transform.right;
 	}
 
 	private void OnFingerDownHandler(Finger finger)
 	{
 		_isMoving = true;
-		_currentSpeed = _maxSpeed;
+		_currentSpeed = 0;
+		_destination = finger.screenPosition;
 	}
 	
 	private void OnFingerMoveHandler(Finger finger)
@@ -65,6 +81,21 @@ public class PlayerBall : MonoBehaviour
 		}
 		_isMoving = false;
 		_currentSpeed = 0;
-		_rb.velocity = _currentSpeed * transform.right;
+		_rb.velocity = Vector2.zero;
+	}
+	
+	public void PlayDeath()
+	{
+		StartCoroutine(PlayDeathEffect());
+	}
+	
+	private IEnumerator PlayDeathEffect()
+	{
+		_trailRenderer.enabled = false;
+		_spriteRenderer.color = new Color(0, 0, 0, 0);
+		var effect = Instantiate(_deathEffect, transform.position, Quaternion.identity);
+		yield return new WaitForSeconds(1f);
+		Destroy(effect);
+		Destroy(this.gameObject);
 	}
 }
