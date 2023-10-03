@@ -13,6 +13,7 @@ public class MainMenuController : MonoBehaviour
 	[SerializeField] private ShopScreen _shopScreen;
 	[SerializeField] private GameController _gameController; 
 	[SerializeField] private MainMenuScreen _menuScreen;
+	[SerializeField] private SettingsScreen settingsScreen;
 	
 	public static int CurrentLevel { get; set; } = 0;
 	public static int Coins { get; set; } = 0;
@@ -39,9 +40,23 @@ public class MainMenuController : MonoBehaviour
 		_fadeScreen.OnFadeEnd += LoadShopScreen;
 	}
 	
+	public void GoToSettings()
+	{
+		_fadeScreen.OnFadeEnd += LoadSettingsWindow;
+	}
+	
 	public void GoToMainMenu()
 	{
 		_fadeScreen.OnFadeEnd += LoadMenuScreen;
+		_menuScreen.gameObject.SetActive(false);
+	}
+	
+	public void LoadSettingsWindow()
+	{
+		_fadeScreen.OnFadeEnd -= LoadSettingsWindow;
+		_menuScreen.gameObject.SetActive(false);
+		settingsScreen.gameObject.SetActive(true);
+		settingsScreen.Refresh();
 	}
 	
 	public void LoadShopScreen()
@@ -57,6 +72,7 @@ public class MainMenuController : MonoBehaviour
 		_fadeScreen.OnFadeEnd -= LoadMenuScreen;
 		_menuScreen.gameObject.SetActive(true);
 		_shopScreen.gameObject.SetActive(false);
+		settingsScreen.gameObject.SetActive(false);
 	}
 	
 	#endregion

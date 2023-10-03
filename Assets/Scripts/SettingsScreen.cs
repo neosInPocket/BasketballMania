@@ -7,7 +7,6 @@ public class SettingsScreen : MonoBehaviour
 {
 	[SerializeField] private Scrollbar musicScrollbar;
 	[SerializeField] private Scrollbar fxScrollbar;
-	[SerializeField] private Animator animator;
 	[SerializeField] private AudioController audioController;
 	
 	private void Start()
@@ -15,13 +14,8 @@ public class SettingsScreen : MonoBehaviour
 		musicScrollbar.value = audioController.volume;
 	}
 	
-	public void Hide()
+	public void Refresh()
 	{
-		animator.SetTrigger("Hide");
-	}
-	
-	public void Disable()
-	{
-		gameObject.SetActive(false);
+		musicScrollbar.value = audioController.volume;
 	}
 }

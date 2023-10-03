@@ -12,7 +12,6 @@ public class ShopScreen : MonoBehaviour
 	[SerializeField] private TMP_Text _speedUpgradeAmount;
 	[SerializeField] private TMP_Text _maxLivesUpgradeAmount;
 	[SerializeField] private TMP_Text _coinsText;
-	[SerializeField] private ErrorText _errorText;
 	
 	private void Start()
 	{
@@ -24,7 +23,6 @@ public class ShopScreen : MonoBehaviour
 		var leftCoins = MainMenuController.Coins - 100;
 		if (leftCoins < 0)
 		{
-			_errorText.Error();
 			return;
 		}
 		MainMenuController.CurrentLivesUpgrade++;
@@ -38,7 +36,6 @@ public class ShopScreen : MonoBehaviour
 		var leftCoins = MainMenuController.Coins - 50;
 		if (leftCoins < 0)
 		{
-			_errorText.Error();
 			return;
 		}
 		MainMenuController.CurrentSpeedUpgrade++;
@@ -49,17 +46,19 @@ public class ShopScreen : MonoBehaviour
 	
 	public void Refresh()
 	{
+		_speedButton.interactable = true;
+		_livesButton.interactable = true;
 		_coinsText.text = MainMenuController.Coins.ToString();
 		_coinsAmountText.text = "Your coins:";
 		_speedUpgradeAmount.text = "Speed upgrade: " + MainMenuController.CurrentSpeedUpgrade.ToString() + "/3";
 		_maxLivesUpgradeAmount.text = "Lives amount upgrade: " + MainMenuController.CurrentLivesUpgrade.ToString() + "/3";
 		
-		if (MainMenuController.CurrentSpeedUpgrade == 3)
+		if (MainMenuController.CurrentSpeedUpgrade == 3 || MainMenuController.Coins - 50 < 0)
 		{
 			_speedButton.interactable = false;
 		}
 		
-		if (MainMenuController.CurrentLivesUpgrade == 3)
+		if (MainMenuController.CurrentLivesUpgrade == 3 || MainMenuController.Coins - 100 < 0)
 		{
 			_livesButton.interactable = false;
 		}
