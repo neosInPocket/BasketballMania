@@ -23,10 +23,10 @@ public class LinePieceRenderer : MonoBehaviour
 		
 		if (collider.gameObject.TryGetComponent<PlayerBall>(out PlayerBall player))
 		{
-			if (player._isDestroyed) return;
+			if (player._isInvincible) return;
 			
-			player._isDestroyed = true;
-			player.PlayDeath();
+			player._isInvincible = true;
+			player.PlayDeath(false);
 		}
 	}
 }

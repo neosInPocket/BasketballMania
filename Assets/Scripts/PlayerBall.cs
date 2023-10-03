@@ -15,11 +15,11 @@ public class PlayerBall : MonoBehaviour
 	[SerializeField] private GameObject _deathEffect;
 	[SerializeField] private SpriteRenderer _spriteRenderer;
 	[SerializeField] private TrailRenderer _trailRenderer;
-	public bool _isDestroyed;
+	public bool _isInvincible;
 	private bool _isMoving;
 	private Vector2 _destination;
 	private float _currentSpeed;
-	
+	private float MaxSpeed;
 	 
 	private void Awake()
 	{
@@ -27,16 +27,24 @@ public class PlayerBall : MonoBehaviour
 		TouchSimulation.Enable();
 	}
 	
-	private void Start()
+	public void Initialize()
 	{
+		MaxSpeed = Mathf.Log(MainMenuController.CurrentSpeedUpgrade + 2) * 2 - 0.15f;
 		Touch.onFingerMove += OnFingerMoveHandler;
 		Touch.onFingerUp += OnFingerUpHandler;
 		Touch.onFingerDown += OnFingerDownHandler;
 	}
 	
+	private void OnDestroy()
+	{
+		Touch.onFingerMove -= OnFingerMoveHandler;
+		Touch.onFingerUp -= OnFingerUpHandler;
+		Touch.onFingerDown -= OnFingerDownHandler;
+	}
+	
 	private void FixedUpdate()
 	{
-		if (!_isMoving) return;
+		if (!_isMoving || !GameController._isPlaying) return;
 		
 		Vector3 lookDir = Camera.main.ScreenToWorldPoint(_destination) - transform.position;
 		Vector2 mousePosition = Camera.main.ScreenToWorldPoint(_destination);
@@ -50,9 +58,9 @@ public class PlayerBall : MonoBehaviour
 			return;
 		}
 		
-		if (_currentSpeed > _maxSpeed)
+		if (_currentSpeed > MaxSpeed)
 		{
-			_currentSpeed = _maxSpeed;
+			_currentSpeed = MaxSpeed;
 			_rb.velocity = _currentSpeed * transform.right;
 			return;
 		}
@@ -84,9 +92,19 @@ public class PlayerBall : MonoBehaviour
 		_rb.velocity = Vector2.zero;
 	}
 	
-	public void PlayDeath()
+	public void PlayDeath(bool isWon)
 	{
-		StartCoroutine(PlayDeathEffect());
+		if (isWon)
+		{
+			StartCoroutine(PlayDeathEffect());
+			return;
+		}
+		
+		GameEventHandler.RaiseEvent(false);
+		if (GameController.lives != 0)
+		{
+			StartCoroutine(TakeDamage());
+		}
 	}
 	
 	private IEnumerator PlayDeathEffect()
@@ -98,4 +116,23 @@ public class PlayerBall : MonoBehaviour
 		Destroy(effect);
 		Destroy(this.gameObject);
 	}
+	
+	private IEnumerator TakeDamage()
+	{
+		for (int i = 0; i < 9; i++)
+		{
+			_spriteRenderer.color = _spriteRenderer.color = new Color(1f, 1f, 1f, 0);
+			_trailRenderer.startColor = new Color(1f, 0f, 0f, 0f);
+			_trailRenderer.endColor = new Color(1f, 1f, 0f, 0f);
+			yield return new WaitForSeconds(0.1f);
+			_spriteRenderer.color = _spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+			_trailRenderer.startColor = new Color(1f, 0f, 0f, 1f);
+			_trailRenderer.endColor = new Color(1f, 1f, 0f, 1f);
+			yield return new WaitForSeconds(0.1f);
+		}
+		
+		_isInvincible = false;
+	}
+	
+	
 }

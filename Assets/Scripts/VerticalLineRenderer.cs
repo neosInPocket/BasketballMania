@@ -22,6 +22,15 @@ public class VerticalLineRenderer : MonoBehaviour
 		SetPosition();
 	}
 	
+	public void Restart()
+	{
+		_rb.velocity = Vector2.zero;
+		var y1 = _screenOpeningBorder.transform.localPosition.y + _gapLength / 2;
+		var y2 = _screenClosingBorder.transform.localPosition.y - _gapLength / 2;
+		var random = Random.Range(y1, y2);
+		transform.localPosition = new Vector2(1.48f, random);
+	}
+	
 	private void OnPieceTriggerEnter()
 	{
 		_speed *= -1;
@@ -30,13 +39,14 @@ public class VerticalLineRenderer : MonoBehaviour
 	
 	private void FixedUpdate()
 	{
+		if (!GameController._isPlaying) return;
 		_rb.velocity = _moveDirection * _speed;
 	}
 	
 	public void SetPosition()
 	{
-		var y1 = _screenOpeningBorder.transform.localPosition.y + _gapLength;
-		var y2 = _screenClosingBorder.transform.localPosition.y - _gapLength;
+		var y1 = _screenOpeningBorder.transform.localPosition.y + _gapLength / 2;
+		var y2 = _screenClosingBorder.transform.localPosition.y - _gapLength / 2;
 		var random = Random.Range(y1, y2);
 		transform.localPosition = new Vector2(transform.localPosition.x, random);
 	}

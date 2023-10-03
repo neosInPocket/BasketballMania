@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 public class GameController : MonoBehaviour
 {
@@ -17,7 +18,16 @@ public class GameController : MonoBehaviour
 	[SerializeField] private WinScreen _defeatScreen; 
 	[SerializeField] private WinScreenWithCoins _winScreen; 
 	[SerializeField] private ProgressBar _levelProgress;
-	public static Sprite[] PlanetsSprites;
+	[SerializeField] private PlayerBall _player;
+	[SerializeField] private BadBall _badBall;
+	[SerializeField] private HorizontalLineRenderer _horizontalLine;
+	[SerializeField] private VerticalLineRenderer _verticalLine;
+	[SerializeField] private Transform enemySpawnPosition;
+	[SerializeField] private List<Transform> _coinsSpawnPoints;
+	[SerializeField] private Transform coinContainer;
+	[SerializeField] private CoinBehaviour coinPrefab;
+	
+	private float _spawnDelay = 3f;
 	private float _playDelay;
 	public static int _levelCoins;
 	private static int _levelMaxPoints;
@@ -26,26 +36,48 @@ public class GameController : MonoBehaviour
 	public static bool _isPlaying = false;
 	private bool isTutor = false;
 	public static int lives;
+	private PlayerBall player;
+	private BadBall enemy;
+	public static bool isWon; 
 	
+	private IEnumerator Spawn()
+	{
+		if (!_isPlaying) yield break;
+		_isSpawning = true;
+		yield return new WaitForSeconds(_spawnDelay);
+		if (!_isPlaying)
+		{
+			_isSpawning = false;
+			yield break;
+		}
+		var rnd = Random.Range(0, _coinsSpawnPoints.Count);
+		var coin = Instantiate(coinPrefab, _coinsSpawnPoints[rnd].transform.position, Quaternion.identity, coinContainer);
+		AudioEvent.RaiseEvent(AudioTypes.CoinAppear);
+		_isSpawning = false;
+	}
 	
 	private void Awake()
 	{
 		_isPlaying = false;
+		GameEventHandler.OnEvent += OnEventHandler;
 	}
 	
 	private void Update()
 	{
 		if (!_isPlaying) return;
 		if (_isSpawning) return;
-		StartCoroutine("Spawn");
+		StartCoroutine(Spawn());
 	}
 	
 	public void Initialize()
 	{
 		_isPlaying = false;
+		isWon = false;
 		_backgroundCanvas.worldCamera = _backGroundCamera;
+		_horizontalLine.Restart();
+		_verticalLine.Restart();
 		
-		GameEventHandler.OnEvent += OnEventHandler;
+		lives = MainMenuController.CurrentLivesUpgrade;
 		_levelMaxPoints = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 5);
 		_levelCoins = (int)(Mathf.Log(MainMenuController.CurrentLevel + 2) * 10) + 50;
 		_gameScreen.gameObject.SetActive(true);
@@ -55,6 +87,13 @@ public class GameController : MonoBehaviour
 		_playDelay = (int)_countDownScreen.GetComponent<Animator>().runtimeAnimatorController.animationClips[0].length;
 		_uiHealth.RefreshLifes(MainMenuController.CurrentLivesUpgrade);
 		isTutor = false;
+		
+		_horizontalLine.SetPosition();
+		_verticalLine.SetPosition();
+		
+		player = Instantiate(_player, Vector2.zero, Quaternion.identity);
+		enemy = Instantiate(_badBall, enemySpawnPosition.position, Quaternion.identity);
+		enemy.Player = player.transform;
 		
 		if (MainMenuController.IsFirstTime == "yes")
 		{
@@ -68,8 +107,6 @@ public class GameController : MonoBehaviour
 			_countDownScreen.gameObject.SetActive(true);
 			_countDownScreen.Show();
 		}
-		
-		
 		StartCoroutine(PlayDelay());
 	}
 	
@@ -80,6 +117,7 @@ public class GameController : MonoBehaviour
 		if (!value)
 		{
 			_fadeScreen.ProcessTakeDamage();
+			lives--;
 			_uiHealth.RefreshLifes(lives);
 		}
 		
@@ -88,6 +126,10 @@ public class GameController : MonoBehaviour
 		if (_points >= _levelMaxPoints)
 		{
 			_isPlaying = false;
+			isWon = true;
+			DeleteObjects(true);
+			_verticalLine.Restart();
+			_horizontalLine.Restart();
 			MainMenuController.CurrentLevel++;
 			MainMenuController.Coins += _levelCoins;
 			SaveLoad.Save();
@@ -99,6 +141,9 @@ public class GameController : MonoBehaviour
 		if (lives <= 0)
 		{
 			_isPlaying = false;
+			_verticalLine.Restart();
+			_horizontalLine.Restart();
+			DeleteObjects(true);
 			_points = 0;
 			_defeatScreen.gameObject.SetActive(true);
 			_defeatScreen.Show();
@@ -110,7 +155,6 @@ public class GameController : MonoBehaviour
 	{
 		_fadeScreen.Fade();
 		_fadeScreen.OnFadeEnd += OnFadeMainMenuEnd;
-		
 	}
 	
 	private void OnFadeMainMenuEnd()
@@ -129,11 +173,27 @@ public class GameController : MonoBehaviour
 		yield return new WaitForSeconds(_playDelay + 0.5f);
 		_countDownScreen.gameObject.SetActive(false);
 		_isPlaying = true;
+		
+		player.Initialize();
 	}
 	
 	public void UpdateUI()
 	{
 		var progress = _points / _levelMaxPoints;
 		_levelProgress.Refresh(progress);
+	}
+	
+	private void DeleteObjects(bool isWon)
+	{
+		foreach(Transform child in coinContainer)
+		{
+			if (child.TryGetComponent<CoinBehaviour>(out CoinBehaviour coin))
+			{
+				coin.PlayDeath();
+			}
+		}
+		
+		enemy.PlayDeath();
+		player.PlayDeath(isWon);
 	}
 }

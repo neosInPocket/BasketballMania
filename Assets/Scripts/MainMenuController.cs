@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
 {
+	[SerializeField] private Canvas _backgroundCanvas;
+	[SerializeField] private Camera _backGroundCamera;
 	[SerializeField] private Camera _mainCamera;
 	[SerializeField] private FadeScreen _fadeScreen; 
 	[SerializeField] private ShopScreen _shopScreen;
@@ -21,8 +23,8 @@ public class MainMenuController : MonoBehaviour
 	public void Initialize()
 	{
 		SaveLoad.Load();
+		_backgroundCanvas.worldCamera = _mainCamera;
 		_menuScreen.gameObject.SetActive(true);
-		GameController.PlanetsSprites = Resources.LoadAll<Sprite>("");
 		_mainCamera.cullingMask = LayerMask.GetMask("TransparentFX", "Ignore Raycast", "Water", "UI", "Rig");
 	}
 	

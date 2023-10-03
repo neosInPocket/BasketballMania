@@ -8,6 +8,7 @@ public class TutorialScreen : MonoBehaviour
 {
 	[SerializeField] private TMP_Text _text;
 	[SerializeField] private Image deathZoneArrow; 
+	[SerializeField] private Image enemyArrow; 
 	[SerializeField] private Image turretArrow;
 	[SerializeField] private Image character;
 	[SerializeField] private Image back;	
@@ -19,7 +20,7 @@ public class TutorialScreen : MonoBehaviour
 	
 	private IEnumerator Tutor()
 	{
-		_text.text = "Welcome to Laser Beam!";
+		_text.text = "Welcome to Ball bash!";
 		_text.gameObject.SetActive(true);
 		back.gameObject.SetActive(true);
 		character.gameObject.SetActive(true);
@@ -28,7 +29,7 @@ public class TutorialScreen : MonoBehaviour
 		_text.GetComponent<Animator>().SetTrigger("Hide");
 		yield return new WaitForSeconds(0.2f);
 		
-		_text.text = "Press on the screen to make turret shoot with lasers";
+		_text.text = "Here is your ball. Move it with touching your screen!";
 		_text.gameObject.SetActive(true);
 		turretArrow.gameObject.SetActive(true);
 		yield return new WaitForSeconds(3);
@@ -37,14 +38,16 @@ public class TutorialScreen : MonoBehaviour
 		yield return new WaitForSeconds(0.2f);
 		turretArrow.gameObject.SetActive(false);
 		
-		_text.text = "Your goal is to pop orbs and avoid popping comets with trails";
+		_text.text = "Your goal is to avoid moving nets and chasing football ball";
 		_text.gameObject.SetActive(true);
+		enemyArrow.gameObject.SetActive(true);
 		yield return new WaitForSeconds(4);
 		
 		_text.GetComponent<Animator>().SetTrigger("Hide");
 		yield return new WaitForSeconds(0.2f);
+		enemyArrow.gameObject.SetActive(false);
 		
-		_text.text = "If orb reaches red zone, you will lose your health";
+		_text.text = "Collect coins and buy upgrades in shop, such as max lives amount";
 		_text.gameObject.SetActive(true);
 		deathZoneArrow.gameObject.SetActive(true);
 		yield return new WaitForSeconds(4);

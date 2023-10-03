@@ -24,6 +24,15 @@ public class HorizontalLineRenderer : MonoBehaviour
 		SetPosition();
 	}
 	
+	public void Restart()
+	{
+		_rb.velocity = Vector2.zero;
+		var x1 = _screenOpeningBorder.transform.localPosition.x + _gapLength / 2;
+		var x2 = _screenClosingBorder.transform.localPosition.x - _gapLength / 2;
+		var random = Random.Range(x1, x2);
+		transform.localPosition = new Vector2(random, -0.72f);
+	}
+	
 	private void OnPieceTriggerEnter()
 	{
 		_speed *= -1;
@@ -32,13 +41,14 @@ public class HorizontalLineRenderer : MonoBehaviour
 	
 	private void FixedUpdate()
 	{
+		if (!GameController._isPlaying) return;
 		_rb.velocity = _moveDirection * _speed;
 	}
 	
 	public void SetPosition()
 	{
-		var x1 = _screenOpeningBorder.transform.localPosition.x + _gapLength;
-		var x2 = _screenClosingBorder.transform.localPosition.x - _gapLength;
+		var x1 = _screenOpeningBorder.transform.localPosition.x + _gapLength / 2;
+		var x2 = _screenClosingBorder.transform.localPosition.x - _gapLength / 2;
 		var random = Random.Range(x1, x2);
 		transform.localPosition = new Vector2(random, transform.localPosition.y);
 	}

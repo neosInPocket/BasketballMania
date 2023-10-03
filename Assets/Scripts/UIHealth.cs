@@ -11,12 +11,12 @@ public class UIHealth : MonoBehaviour
 	{
 		foreach (var life in _lifes)
 		{
-			life.color = new Color(0, 0, 0, 1f);
+			life.gameObject.SetActive(false);
 		}
 		
 		for (int i = 0; i < value; i++)
 		{
-			_lifes[i].color = new Color(1, 1, 1, 1f);
+			_lifes[i].gameObject.SetActive(true);
 		}
 	}
 }
