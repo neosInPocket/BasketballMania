@@ -4,9 +4,23 @@ using UnityEngine;
 
 public class CoinBehaviour : MonoBehaviour
 {
+	[SerializeField] private GameObject spawnEffect;
 	[SerializeField] private GameObject effect;
 	[SerializeField] private SpriteRenderer spriteRenderer;
 	private bool _isDestroyed;
+	private GameObject _spawnEffect;
+	
+	private void Start()
+	{
+		StartCoroutine(SpawnEffect());
+	}
+	
+	private IEnumerator SpawnEffect()
+	{
+		_spawnEffect = Instantiate(spawnEffect, transform);
+		yield return new WaitForSeconds(1);
+		Destroy(_spawnEffect.gameObject);
+	}
 	
 	private void OnTriggerEnter2D(Collider2D collider)
 	{

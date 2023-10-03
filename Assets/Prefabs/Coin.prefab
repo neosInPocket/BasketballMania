@@ -133,5 +133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13e5211ec2f78cc4898b915e07689f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnEffect: {fileID: 1027116103833860, guid: 6fb67c529e0173c47857b2a860bde40c, type: 3}
   effect: {fileID: 130626, guid: e7208592fcd84db46be48b5bce0525a5, type: 3}
   spriteRenderer: {fileID: 5890825880792164405}

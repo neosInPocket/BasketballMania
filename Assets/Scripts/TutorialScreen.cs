@@ -38,7 +38,7 @@ public class TutorialScreen : MonoBehaviour
 		yield return new WaitForSeconds(0.2f);
 		turretArrow.gameObject.SetActive(false);
 		
-		_text.text = "Your goal is to avoid moving nets and chasing football ball";
+		_text.text = "Your goal is to avoid moving nets and chasing ball";
 		_text.gameObject.SetActive(true);
 		enemyArrow.gameObject.SetActive(true);
 		yield return new WaitForSeconds(4);

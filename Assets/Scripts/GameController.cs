@@ -26,6 +26,7 @@ public class GameController : MonoBehaviour
 	[SerializeField] private List<Transform> _coinsSpawnPoints;
 	[SerializeField] private Transform coinContainer;
 	[SerializeField] private CoinBehaviour coinPrefab;
+	[SerializeField] private ParticleSystem _particleSystem;
 	
 	private float _spawnDelay = 3f;
 	private float _playDelay;
@@ -71,6 +72,7 @@ public class GameController : MonoBehaviour
 	
 	public void Initialize()
 	{
+		_particleSystem.gameObject.SetActive(false);
 		_isPlaying = false;
 		isWon = false;
 		_backgroundCanvas.worldCamera = _backGroundCamera;
@@ -135,6 +137,7 @@ public class GameController : MonoBehaviour
 			SaveLoad.Save();
 			_winScreen.gameObject.SetActive(true);
 			_winScreen.Show(_levelCoins);
+			_particleSystem.gameObject.SetActive(true);
 			return;
 		}
 		
