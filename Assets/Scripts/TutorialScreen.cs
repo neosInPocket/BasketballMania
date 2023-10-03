@@ -20,7 +20,7 @@ public class TutorialScreen : MonoBehaviour
 	
 	private IEnumerator Tutor()
 	{
-		_text.text = "Welcome to Ball bash!";
+		_text.text = "Welcome to PinIt Tips: Cricket Games!";
 		_text.gameObject.SetActive(true);
 		back.gameObject.SetActive(true);
 		character.gameObject.SetActive(true);

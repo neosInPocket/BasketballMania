@@ -18315,7 +18315,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ball Bash!
+  m_text: 'PinIt Tips: Cricket Games'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 17c64580a0a6c5042af8a50ecf557ec6, type: 2}
   m_sharedMaterial: {fileID: -4337547179464132147, guid: 17c64580a0a6c5042af8a50ecf557ec6, type: 2}
